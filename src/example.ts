@@ -3,40 +3,85 @@
  */
 
 import { CS2EventParser } from './parser.js';
+import { PolymarketAPI } from './api.js';
 
 async function main() {
   const parser = new CS2EventParser();
+  const api = new PolymarketAPI();
 
   console.log('🎮 CS2 Polymarket Event Parser\n');
-  console.log('Fetching live CS2 events...\n');
+  console.log('=' .repeat(80));
+  console.log('\n');
 
   try {
-    // Fetch all live CS2 events
-    const cs2Events = await parser.fetchLiveCS2Events();
+    // First, let's check what esports events are available
+    console.log('📋 Step 1: Checking all active esports events...\n');
 
-    // Display summary
-    console.log(parser.getEventsSummary(cs2Events));
+    const searchTerms = ['cs2', 'counter-strike', 'counter strike', 'csgo', 'esports'];
+    let allFoundEvents = [];
 
-    // Display detailed information for each event
-    for (const cs2Event of cs2Events) {
-      console.log(parser.formatCS2Event(cs2Event));
+    for (const term of searchTerms) {
+      console.log(`   Searching for: "${term}"...`);
+      const events = await api.searchEvents(term, { active: true, limit: 50 });
+      console.log(`   Found ${events.length} event(s)`);
+
+      if (events.length > 0) {
+        allFoundEvents.push(...events);
+      }
     }
 
-    // Example: Search for specific events
-    console.log('\n\nSearching for BLAST events...\n');
-    const blastEvents = await parser.searchCS2Events('blast');
+    // Remove duplicates
+    const uniqueEvents = Array.from(new Map(allFoundEvents.map(e => [e.id, e])).values());
+    console.log(`\n   Total unique events found: ${uniqueEvents.length}\n`);
 
-    if (blastEvents.length > 0) {
-      console.log(`Found ${blastEvents.length} BLAST event(s)\n`);
-      for (const event of blastEvents) {
-        console.log(parser.formatCS2Event(event));
+    if (uniqueEvents.length === 0) {
+      console.log('⚠️  No CS2 events found. Checking all active events...\n');
+
+      const allEvents = await api.fetchEvents({ active: true, limit: 20 });
+      console.log(`Found ${allEvents.length} total active events:\n`);
+
+      allEvents.slice(0, 10).forEach((event, i) => {
+        console.log(`${i + 1}. ${event.title}`);
+        console.log(`   Slug: ${event.slug}`);
+        console.log(`   Markets: ${event.markets?.length || 0}`);
+        console.log('');
+      });
+
+      console.log('\n💡 Tip: Use parser.fetchCS2EventBySlug(slug) to get a specific event\n');
+      return;
+    }
+
+    // Display found CS2 events
+    console.log('=' .repeat(80));
+    console.log('📊 Step 2: Parsing CS2 events with odds and order book data...\n');
+
+    for (const event of uniqueEvents.slice(0, 5)) {
+      console.log(`Processing: ${event.title}...`);
+
+      try {
+        const cs2Event = await parser.fetchCS2EventBySlug(event.slug);
+        console.log(parser.formatCS2Event(cs2Event));
+      } catch (err) {
+        console.log(`   ⚠️  Could not fetch detailed data for ${event.title}`);
+        console.log(`   Error: ${err instanceof Error ? err.message : String(err)}\n`);
       }
-    } else {
-      console.log('No BLAST events found');
+    }
+
+    // Summary
+    console.log('\n' + '=' .repeat(80));
+    console.log('✅ Parsing complete!\n');
+    console.log(`Total events processed: ${Math.min(uniqueEvents.length, 5)}`);
+
+    if (uniqueEvents.length > 5) {
+      console.log(`\n💡 ${uniqueEvents.length - 5} more events available. Showing first 5.`);
     }
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('❌ Error:', error);
+    if (error instanceof Error) {
+      console.error('Message:', error.message);
+      console.error('Stack:', error.stack);
+    }
     process.exit(1);
   }
 }

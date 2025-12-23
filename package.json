@@ -7,8 +7,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
-    "test": "tsx src/example.ts"
+    "dev": "tsx src/example.ts",
+    "test": "tsx src/example.ts",
+    "test-api": "tsx src/test-api.ts",
+    "quick-test": "tsx src/test-api.ts"
   },
   "keywords": [
     "polymarket",
