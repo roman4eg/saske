@@ -12,7 +12,8 @@
     "test-api": "tsx src/test-api.ts",
     "quick-test": "tsx src/test-api.ts",
     "test-specific": "tsx src/test-specific.ts",
-    "cs2": "tsx src/test-specific.ts"
+    "cs2": "tsx src/test-specific.ts",
+    "debug": "tsx src/debug-api.ts"
   },
   "keywords": [
     "polymarket",
