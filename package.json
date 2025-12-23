@@ -1,0 +1,31 @@
+{
+  "name": "cs2-polymarket-parser",
+  "version": "1.0.0",
+  "description": "Parser for CS2 events from Polymarket with live odds and order book data",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "tsx src/example.ts"
+  },
+  "keywords": [
+    "polymarket",
+    "cs2",
+    "counter-strike",
+    "parser",
+    "betting",
+    "odds"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
