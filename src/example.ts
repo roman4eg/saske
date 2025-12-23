@@ -22,7 +22,8 @@ async function main() {
 
     for (const term of searchTerms) {
       console.log(`   Searching for: "${term}"...`);
-      const events = await api.searchEvents(term, { active: true, limit: 50 });
+      // Search without active filter to find all CS2 events
+      const events = await api.searchEvents(term, { limit: 100 });
       console.log(`   Found ${events.length} event(s)`);
 
       if (events.length > 0) {
@@ -30,15 +31,28 @@ async function main() {
       }
     }
 
+    // Also try searching in all events by slug pattern
+    console.log(`   Searching all events for CS2 patterns...`);
+    const allEvents = await api.fetchEvents({ limit: 200 });
+    const cs2BySlug = allEvents.filter(e =>
+      e.slug.includes('cs2') ||
+      e.slug.includes('counter-strike')
+    );
+    console.log(`   Found ${cs2BySlug.length} additional event(s) by slug`);
+
+    if (cs2BySlug.length > 0) {
+      allFoundEvents.push(...cs2BySlug);
+    }
+
     // Remove duplicates
     const uniqueEvents = Array.from(new Map(allFoundEvents.map(e => [e.id, e])).values());
     console.log(`\n   Total unique events found: ${uniqueEvents.length}\n`);
 
     if (uniqueEvents.length === 0) {
-      console.log('⚠️  No CS2 events found. Checking all active events...\n');
+      console.log('⚠️  No CS2 events found. Checking all events...\n');
 
-      const allEvents = await api.fetchEvents({ active: true, limit: 20 });
-      console.log(`Found ${allEvents.length} total active events:\n`);
+      const allEvents = await api.fetchEvents({ limit: 20 });
+      console.log(`Found ${allEvents.length} total events:\n`);
 
       allEvents.slice(0, 10).forEach((event, i) => {
         console.log(`${i + 1}. ${event.title}`);
