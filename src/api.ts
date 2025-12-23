@@ -135,4 +135,69 @@ export class PolymarketAPI {
       (event.description && event.description.toLowerCase().includes(lowerKeyword))
     );
   }
+
+  /**
+   * Fetch all available tags
+   */
+  async fetchTags(): Promise<any[]> {
+    const url = `${GAMMA_API_BASE}/tags`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Tags API request failed: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data as any[];
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch sports information
+   */
+  async fetchSports(): Promise<any[]> {
+    const url = `${GAMMA_API_BASE}/sports`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.warn(`Sports API request failed: ${response.status} ${response.statusText}`);
+        return [];
+      }
+      const data = await response.json();
+      return data as any[];
+    } catch (error) {
+      console.warn('Error fetching sports:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch markets from Gamma API
+   */
+  async fetchMarkets(params: any = {}): Promise<any[]> {
+    const queryParams = new URLSearchParams();
+
+    if (params.limit) queryParams.append('limit', String(params.limit));
+    if (params.offset) queryParams.append('offset', String(params.offset));
+    if (params.closed !== undefined) queryParams.append('closed', String(params.closed));
+    if (params.tag_id) queryParams.append('tag_id', String(params.tag_id));
+
+    const url = `${GAMMA_API_BASE}/markets?${queryParams.toString()}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Markets API request failed: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data as any[];
+    } catch (error) {
+      console.error('Error fetching markets:', error);
+      throw error;
+    }
+  }
 }

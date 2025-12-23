@@ -42,7 +42,7 @@ async function debugAPI() {
       console.log(`   Status: ${response.status}`);
 
       if (response.ok) {
-        const markets = await response.json();
+        const markets = await response.json() as any[];
         console.log(`   Found ${markets.length} markets`);
 
         // Show first few
@@ -64,7 +64,7 @@ async function debugAPI() {
       console.log(`   Status: ${response.status}`);
 
       if (response.ok) {
-        const tags = await response.json();
+        const tags = await response.json() as any[];
         console.log(`   Found ${tags.length} tags`);
 
         // Look for sports/esports tags
@@ -89,7 +89,7 @@ async function debugAPI() {
             const eventsResponse = await fetch(`${baseUrl}/events?tag=${tag.slug}&limit=10`);
 
             if (eventsResponse.ok) {
-              const events = await eventsResponse.json();
+              const events = await eventsResponse.json() as any[];
               console.log(`      Found ${events.length} events`);
 
               events.forEach((event: any, i: number) => {
@@ -111,7 +111,7 @@ async function debugAPI() {
       const response = await fetch(`${baseUrl}/markets?limit=500`);
 
       if (response.ok) {
-        const markets = await response.json();
+        const markets = await response.json() as any[];
         const cs2Markets = markets.filter((m: any) =>
           m.question?.toLowerCase().includes('cs2') ||
           m.question?.toLowerCase().includes('counter-strike') ||
