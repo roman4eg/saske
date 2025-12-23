@@ -15,7 +15,8 @@
     "cs2": "tsx src/test-specific.ts",
     "debug": "tsx src/debug-api.ts",
     "market-id": "tsx src/test-market-id.ts",
-    "live": "tsx src/cs2-live.ts"
+    "live": "tsx src/cs2-live.ts",
+    "filters": "tsx src/cs2-filters.ts"
   },
   "keywords": [
     "polymarket",
