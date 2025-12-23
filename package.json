@@ -16,7 +16,8 @@
     "debug": "tsx src/debug-api.ts",
     "market-id": "tsx src/test-market-id.ts",
     "live": "tsx src/cs2-live.ts",
-    "filters": "tsx src/cs2-filters.ts"
+    "filters": "tsx src/cs2-filters.ts",
+    "sports": "tsx src/cs2-sports.ts"
   },
   "keywords": [
     "polymarket",
