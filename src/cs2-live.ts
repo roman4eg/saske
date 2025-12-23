@@ -28,20 +28,30 @@ async function findCS2Markets() {
   const baseUrl = 'https://gamma-api.polymarket.com';
 
   try {
-    // Try different limits to find CS2 markets
-    console.log('\n1️⃣  Searching for Counter-Strike markets...\n');
+    // Use pagination to find CS2 markets (API returns max 500 per request)
+    console.log('\n1️⃣  Searching for Counter-Strike markets with pagination...\n');
 
-    const limits = [2000, 3000, 5000];
     let allCS2Markets: any[] = [];
+    const batchSize = 500;
+    const maxBatches = 10; // Search through 5000 markets max
+    let totalFetched = 0;
 
-    for (const limit of limits) {
-      console.log(`   Trying limit=${limit}...`);
+    for (let batch = 0; batch < maxBatches; batch++) {
+      const offset = batch * batchSize;
+      console.log(`   Batch ${batch + 1}/${maxBatches}: Fetching markets ${offset}-${offset + batchSize}...`);
 
-      const response = await fetch(`${baseUrl}/markets?limit=${limit}`);
+      const response = await fetch(`${baseUrl}/markets?limit=${batchSize}&offset=${offset}`);
 
       if (response.ok) {
         const markets = await response.json() as any[];
-        console.log(`   Fetched ${markets.length} markets total`);
+        totalFetched += markets.length;
+        console.log(`   Received ${markets.length} markets`);
+
+        // If we got less than batch size, we've reached the end
+        if (markets.length === 0) {
+          console.log(`   Reached end of markets at offset ${offset}`);
+          break;
+        }
 
         const cs2Markets = markets.filter((m: any) =>
           m.question?.toLowerCase().includes('counter-strike') ||
@@ -50,14 +60,24 @@ async function findCS2Markets() {
           m.description?.toLowerCase().includes('counter-strike')
         );
 
-        console.log(`   Found ${cs2Markets.length} CS2 markets\n`);
-
         if (cs2Markets.length > 0) {
-          allCS2Markets = cs2Markets;
+          console.log(`   ✅ Found ${cs2Markets.length} CS2 markets in this batch!`);
+          allCS2Markets.push(...cs2Markets);
+        }
+
+        // If we received less than batchSize, we're at the end
+        if (markets.length < batchSize) {
+          console.log(`   Reached end of available markets`);
           break;
         }
+      } else {
+        console.log(`   API error: ${response.status}`);
+        break;
       }
     }
+
+    console.log(`\n   📊 Total markets checked: ${totalFetched}`);
+    console.log(`   🎮 Total CS2 markets found: ${allCS2Markets.length}\n`);
 
     if (allCS2Markets.length === 0) {
       console.log('   ⚠️  No CS2 markets found in standard results');
