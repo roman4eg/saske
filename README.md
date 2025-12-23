@@ -13,9 +13,32 @@
 
 ## Встановлення
 
+### Windows (Швидке встановлення)
+
+**Варіант 1: Batch файл (рекомендовано)**
+```cmd
+install.bat
+```
+
+**Варіант 2: PowerShell**
+```powershell
+.\install.ps1
+```
+
+**Варіант 3: Вручну**
+```cmd
+npm install
+npm run build
+```
+
+### Linux / macOS
+
 ```bash
 npm install
+npm run build
 ```
+
+> **Примітка**: Для роботи потрібен Node.js версії 18 або вище. Завантажити можна з [nodejs.org](https://nodejs.org/)
 
 ## Використання
 
@@ -50,12 +73,21 @@ const event = await parser.fetchCS2EventBySlug('cs2-blasttv-austin-major');
 
 ### Запуск прикладу
 
+**Windows:**
+```cmd
+run.bat
+```
+або
+```cmd
+npm run dev
+```
+
+**Linux / macOS:**
 ```bash
 npm run dev
 ```
 
-або
-
+**Альтернативно:**
 ```bash
 npm test
 ```
